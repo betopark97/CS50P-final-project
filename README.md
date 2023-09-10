@@ -4,6 +4,7 @@ This repository is to save all of my assignments and project for Harvard's CS50P
 (Introduction to Programming with Python).
 
 This includes Problems Set assignments from Week 0 (Introduction) to Week 10 (Et Cetera)
+
 0. Introduction
 1. Functions, Variables
 2. Conditionals
