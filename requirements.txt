@@ -4,3 +4,6 @@ pip install numpy
 pip install matplotlib
 pip install folium
 pip install tabulate
+
+Other files that you need from this repository:
+worldcities.csv
