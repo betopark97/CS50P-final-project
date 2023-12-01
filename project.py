@@ -16,11 +16,13 @@ reset_font = '\033[0m'
 df = pd.read_csv('worldcities.csv')
 df = df.loc[:,['country','city_ascii','lat','lng']]
 df = df.rename(columns={'city_ascii':'city'})
+
 # some cleaning for name of countries that are hard to type
 df = df.replace('Côte d\'Ivoire', 'Ivory Coast')
 df = df.replace('Korea, South', 'South Korea')
 df = df.replace('Korea, North', 'North Korea')
 df['country'] = df['country'].agg(lambda x: x.str.replace('-', ' '))
+
 # some cleaning for name of cities that are hard to type
 df['city'] = df['city'].agg(lambda x: x.str.replace('-', ' '))
 df['city'] = df['city'].agg(lambda x: x.str.replace('\'', ''))
