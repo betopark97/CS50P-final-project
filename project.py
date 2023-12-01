@@ -7,11 +7,14 @@ from tabulate import tabulate
 
 
 # different color fonts and reset
-red_font = "\033[91m"
-green_font = "\033[92m"
-blue_font = "\033[94m"
-reset_font = "\033[0m"
+red_font = '\033[91m'
+green_font = '\033[92m'
+blue_font = '\033[94m'
+reset_font = '\033[0m'
 
+# make dataframe
+df = pd.read_csv('worldcities.csv')
+df = df.loc[:,['country','city','lat','lng']]
 
 # make the functions here
 def main():
@@ -24,7 +27,7 @@ What would you like to do? (Type number + Enter)
 Input: """ 
     while True: 
         user = input(green_font + instruction + reset_font)
-        if user == "1":
+        if user =='1':
             # ask country
             
             # ask all cities to visit
@@ -40,15 +43,15 @@ if you want to remake the table input 1 again,
 if you want to proceed input 2 for an ideal route calculation!"""
             print(red_font + warning + reset_font)
 
-        elif user == "2":
+        elif user == '2':
             # make an ideal route
             pass
            
-        elif user == "3":
+        elif user == '3':
             # save in a file
             pass
 
-        elif user == "4":
+        elif user == '4':
             # exit the program
             return False
 
