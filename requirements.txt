@@ -1,0 +1,6 @@
+Any pip-installable libraries that are needed to run this project:
+pip install pandas
+pip install numpy
+pip install matplotlib
+pip install folium
+pip install tabulate
