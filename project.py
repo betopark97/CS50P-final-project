@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import folium
 from tabulate import tabulate
+import re
 
 
 # different color fonts and reset
@@ -12,13 +13,24 @@ green_font = '\033[92m'
 blue_font = '\033[94m'
 reset_font = '\033[0m'
 
-# make dataframe
+# read dataframe
 df = pd.read_csv('worldcities.csv')
 df = df.loc[:,['country','city_ascii','lat','lng']]
 df = df.rename(columns={'city_ascii':'city'})
 
-# some cleaning for name of countries that are hard to type
-df = df.replace('Côte d\'Ivoire', 'Ivory Coast')
+# find names that are hard to type to clean them
+def find_non_alphabet(df,column):
+    non_alphabet_country = set()
+
+    for value in df[column]:
+        if re.search(r'[^a-zA-Z\s]', value):
+            non_alphabet_country.add(value)
+
+    for country in non_alphabet_country:
+        print(country)
+
+# some manual cleaning for name of countries that are hard to type
+df = df.replace("Côte D’Ivoire", 'Ivory Coast')
 df = df.replace('Korea, South', 'South Korea')
 df = df.replace('Korea, North', 'North Korea')
 df['country'] = df['country'].agg(lambda x: x.str.replace('-', ' '))
