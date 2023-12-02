@@ -79,10 +79,30 @@ if you want to proceed input 2 for an ideal route calculation!"""
             # exit the program
             return False
 
+def check_country(df, country):
+    # make case insensitive to match dataframe
+    country = country.title().strip()
+    # check if the country is in dataframe
+    if country in df['country'].values:
+        return 
+    else:
+        # if the user input doesn't match the dataframe exactly
+        # loop all the input words and try to find what the user would want
+        country_words = country.split()
+        if len(country_words) >= 1:
+            country_suggestion = []
+            for word in country_words:
+                for suggestion in df.loc[df['country'].str.contains(word),'country'].value_counts().index.to_list():
+                    country_suggestion.append(suggestion)
+            print('Perhaps you mean:')
+            for suggestion in country_suggestion:
+                print('...'+suggestion)
+            print('Please, try again.')
+        else:
+            print('You didn\'t input a country, try again.')
 
-def check_input():
+def check_cities():
     pass
-
 
 def make_table():
     pass
