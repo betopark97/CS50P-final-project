@@ -58,11 +58,22 @@ Input: """
                 country = input('Which country are you traveling to? ').strip().title()
                 # check if country is in dataset
                 check = check_country(df, country)
-                # if country is in dataset stop asking, else keep asking
+                # if country is in dataset stop while loop
                 if country == check:
                     break
             # Cities
+            # instruction for cities input
+            print(green_font+'Input "done" when done adding cities.'+reset_font)
+            while True:
+                # ask for city and make it case-insensitive
+                cities = input('Which city are you traveling to? ').strip().title()
+                # check if cities are in dataset
+                check = check_cities(df, cities)
+                # if cities are in dataset stop whle loop
+
             
+            # Country and City table
+
             # make a data list of cities with lat and lng
             
             # make a table with the cities and ask if wants to proceed or remake
