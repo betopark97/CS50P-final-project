@@ -57,7 +57,7 @@ Input: """
                 # ask for country and make it case-insensitive 
                 country = input('Which country are you traveling to? ').strip().title()
                 # check if country is in dataset
-                check = check_country(df, country)
+                check = check_place(df,country, column='country')
                 # if country is in dataset stop while loop
                 if country == check:
                     break
@@ -68,7 +68,7 @@ Input: """
                 # ask for city and make it case-insensitive
                 cities = input('Which city are you traveling to? ').strip().title()
                 # check if cities are in dataset
-                check = check_cities(df, cities)
+                check = check_place(df, cities)
                 # if cities are in dataset stop whle loop
 
             
@@ -97,54 +97,33 @@ if you want to proceed input 2 for an ideal route calculation!"""
             # exit the program
             return False
 
-def check_country(df, country):
+def check_place(df, place, column):
     # check if the country is in dataframe
-    if country in df['country'].values:
-        return country
+    if place in df[column].values:
+        return place
     else:
         # if the user input doesn't match the dataframe exactly
         # loop all the input words and try to find what the user would want
-        country_words = country.split()
+        place_words = place.split()
         # if user input one or more words
-        if len(country_words) >= 1:
-            country_suggestion = []
+        if len(place_words) >= 1:
+            place_suggestion = []
             # loop through words and see if they are in dataset
-            for word in country_words:
-                for suggestion in df.loc[df['country'].str.contains(word),'country'].value_counts().index.to_list():
-                    country_suggestion.append(suggestion)
+            for word in place_words:
+                for suggestion in df.loc[df[column].str.contains(word),column].value_counts().index.to_list():
+                    place_suggestion.append(suggestion)
             # if after loop there wasn't a word that matched dataset
-            if len(country_suggestion) == 0:
+            if len(place_suggestion) == 0:
                 print('Please, try again.')
             # if after loop there was a word that matched dataset, suggest
             else:
                 print('Perhaps you mean:')
-                for suggestion in country_suggestion:
+                for suggestion in place_suggestion:
                     print('...'+suggestion)
                 print('Please, try again.')
         # if user didn't input anything
         else:
-            print('You didn\'t input a country, try again.')
-
-# check if the cities are in dataframe
-def check_cities(df, cities):
-    cities = [city.title().strip() for city in cities]
-    cities_in_df = []
-    cities_not_in_df = []
-    for city in cities:
-        if city in df['city'].values:
-            cities_in_df.append(city)
-        else:
-            cities_not_in_df.append(city)
-    if len(cities_not_in_df) == 0:
-        return cities
-    else:
-        print('These cities were in the dataframe:')
-        for city in cities_in_df:
-            print(city)
-        print('These cities were not in the dataframe:')
-        for city in cities_not_in_df:
-            print(city)
-        print('Maybe there is a typo try again?')
+            print('You didn\'t make an input, try again.')
 
 def make_table():
     pass
