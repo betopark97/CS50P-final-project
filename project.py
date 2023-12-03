@@ -84,7 +84,7 @@ def check_country(df, country):
     country = country.title().strip()
     # check if the country is in dataframe
     if country in df['country'].values:
-        return 
+        return country
     else:
         # if the user input doesn't match the dataframe exactly
         # loop all the input words and try to find what the user would want
@@ -101,8 +101,26 @@ def check_country(df, country):
         else:
             print('You didn\'t input a country, try again.')
 
-def check_cities():
-    pass
+# check if the cities are in dataframe
+def check_cities(df, cities):
+    cities = [city.title().strip() for city in cities]
+    cities_in_df = []
+    cities_not_in_df = []
+    for city in cities:
+        if city in df['city'].values:
+            cities_in_df.append(city)
+        else:
+            cities_not_in_df.append(city)
+    if len(cities_not_in_df) == 0:
+        return cities
+    else:
+        print('These cities were in the dataframe:')
+        for city in cities_in_df:
+            print(city)
+        print('These cities were not in the dataframe:')
+        for city in cities_not_in_df:
+            print(city)
+        print('Maybe there is a typo try again?')
 
 def make_table():
     pass
