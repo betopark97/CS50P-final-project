@@ -52,9 +52,16 @@ Input: """
     while True: 
         user = input(green_font + instruction + reset_font)
         if user =='1':
-            # ask country
-            
-            # ask all cities to visit
+            # Country
+            while True:
+                # ask for country and make it case-insensitive 
+                country = input('Which country are you traveling to? ').strip().title()
+                # check if country is in dataset
+                check = check_country(df, country)
+                # if country is in dataset stop asking, else keep asking
+                if country == check:
+                    break
+            # Cities
             
             # make a data list of cities with lat and lng
             
@@ -80,8 +87,6 @@ if you want to proceed input 2 for an ideal route calculation!"""
             return False
 
 def check_country(df, country):
-    # make case insensitive to match dataframe
-    country = country.title().strip()
     # check if the country is in dataframe
     if country in df['country'].values:
         return country
@@ -89,15 +94,23 @@ def check_country(df, country):
         # if the user input doesn't match the dataframe exactly
         # loop all the input words and try to find what the user would want
         country_words = country.split()
+        # if user input one or more words
         if len(country_words) >= 1:
             country_suggestion = []
+            # loop through words and see if they are in dataset
             for word in country_words:
                 for suggestion in df.loc[df['country'].str.contains(word),'country'].value_counts().index.to_list():
                     country_suggestion.append(suggestion)
-            print('Perhaps you mean:')
-            for suggestion in country_suggestion:
-                print('...'+suggestion)
-            print('Please, try again.')
+            # if after loop there wasn't a word that matched dataset
+            if len(country_suggestion) == 0:
+                print('Please, try again.')
+            # if after loop there was a word that matched dataset, suggest
+            else:
+                print('Perhaps you mean:')
+                for suggestion in country_suggestion:
+                    print('...'+suggestion)
+                print('Please, try again.')
+        # if user didn't input anything
         else:
             print('You didn\'t input a country, try again.')
 
