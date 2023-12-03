@@ -150,7 +150,7 @@ def make_table(df):
 
 def calculate_distance(lat1, lng1, lat2, lng2):
     # approximate radius of earth in km
-    R = 6373.0
+    R = 6371.0
 
     # convert latitudes into radians
     lat1 = np.radians(lat1)
@@ -172,7 +172,7 @@ def calculate_distance(lat1, lng1, lat2, lng2):
 
 
 def make_route():
-    # use calculate_distances() to make ideal route
+    # use Dijkstra's Algorithm to make ideal route
     pass
 
 
