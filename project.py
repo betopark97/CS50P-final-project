@@ -33,6 +33,7 @@ def find_non_alphabet(df,column):
 df = df.replace("Côte D’Ivoire", 'Ivory Coast')
 df = df.replace('Korea, South', 'South Korea')
 df = df.replace('Korea, North', 'North Korea')
+df = df.replace('Naha', 'Okinawa')
 df['country'] = df['country'].agg(lambda x: x.str.replace('-', ' '))
 
 # some cleaning for name of cities that are hard to type
@@ -52,7 +53,9 @@ Input: """
     while True: 
         user = input(green_font + instruction + reset_font)
         if user =='1':
+
             # Country
+            final_country = None
             while True:
                 # ask for country and make it case-insensitive 
                 country = input('Which country are you traveling to? ').strip().title()
@@ -60,27 +63,35 @@ Input: """
                 check = check_place(df,country, column='country')
                 # if country is in dataset stop while loop
                 if country == check:
+                    final_country = country
                     break
+
             # Cities
             # instruction for cities input
             print(green_font+'Input "done" when done adding cities.'+reset_font)
+            final_cities = []
             while True:
                 # ask for city and make it case-insensitive
-                cities = input('Which city are you traveling to? ').strip().title()
+                city = input('Which city are you traveling to? ').strip().title()
                 # check if cities are in dataset
-                check = check_place(df, cities)
+                check = check_place(df, city, column='city')
+                # condition to be done inputing
+                if city == 'Done':
+                    break
                 # if cities are in dataset stop whle loop
-
-            
+                elif city == check:
+                    final_cities.append(city)
+                
             # Country and City table
-
-            # make a data list of cities with lat and lng
-            
-            # make a table with the cities and ask if wants to proceed or remake
+            # mask dataframe to match the user inputs
+            df_table = df.loc[(df['country']==final_country) & (df['city'].isin(final_cities))]
+            # make the table with country, city, latitude and longitudes
+            print(make_table(df_table))
+            # ask if wants to proceed or remake
             
 
             warning = """
-If the table missed a country: maybe you had a typo or the dataset doesn't contain info about that place 😭,
+If the table missed a country or city: maybe you had a typo or the dataset doesn't contain info about that place 😭,
 if you want to remake the table input 1 again,
 if you want to proceed input 2 for an ideal route calculation!"""
             print(red_font + warning + reset_font)
@@ -96,11 +107,15 @@ if you want to proceed input 2 for an ideal route calculation!"""
         elif user == '4':
             # exit the program
             return False
+        
 
 def check_place(df, place, column):
-    # check if the country is in dataframe
+    # check if the place is in dataframe
     if place in df[column].values:
         return place
+    # this is to skip the input 'done' to finish inputting cities
+    elif place == 'Done':
+        return
     else:
         # if the user input doesn't match the dataframe exactly
         # loop all the input words and try to find what the user would want
@@ -125,8 +140,11 @@ def check_place(df, place, column):
         else:
             print('You didn\'t make an input, try again.')
 
-def make_table():
-    pass
+
+def make_table(df):
+    new_df = df.rename(columns=lambda x: x.capitalize())
+    return tabulate(new_df, headers='keys', tablefmt='grid', showindex=False)
+    
 
 
 def calculate_distances():
