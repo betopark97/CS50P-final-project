@@ -142,12 +142,37 @@ def check_place(df, place, column):
 
 
 def make_table(df):
+    # capitalize the name of columns to show in tabulate
     new_df = df.rename(columns=lambda x: x.capitalize())
+    # return the tabulate table
     return tabulate(new_df, headers='keys', tablefmt='grid', showindex=False)
-    
 
 
-def calculate_distances():
+def calculate_distance(lat1, lng1, lat2, lng2):
+    # approximate radius of earth in km
+    R = 6373.0
+
+    # convert latitudes into radians
+    lat1 = np.radians(lat1)
+    lng1 = np.radians(lng1)
+    lat2 = np.radians(lat2)
+    lng2 = np.radians(lng2)
+
+    # distances for lat and lng
+    dlng = lng2 - lng1
+    dlat = lat2 - lat1
+
+    # haversine formula
+    a = np.sin(dlat / 2)**2 + np.cos(lat1) * np.cos(lat2) * np.sin(dlng / 2)**2
+    c = 2 * np.arctan2(np.sqrt(a), np.sqrt(1 - a))
+
+    # result distance in km
+    distance = R * c
+    return distance
+
+
+def make_route():
+    # use calculate_distances() to make ideal route
     pass
 
 
