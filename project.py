@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import folium
 from tabulate import tabulate
+import itertools
 import re
 
 
@@ -180,9 +181,28 @@ def calculate_distance(lat1, lng1, lat2, lng2):
 
 def make_route(df_table):
     # Use idea of Dijkstra's Algorithm
+
+    # calculate the longest distances
+    # Get the two farthest cities using itertools
+    city_combinations = list(itertools.combinations(df_table['city'],2))
+    city_distances = []
+    for index, combination in enumerate(city_combinations):
+        city1, city2 = combination
+        lat1, lng1 = df_table.loc[df_table['city']==city1,['lat','lng']].values[0]
+        lat2, lng2 = df_table.loc[df_table['city']==city2,['lat','lng']].values[0]
+        print(f'Combination {index+1}')
+        distance = calculate_distance(lat1,lng1,lat2,lng2)
+        print(f'Distance from {city1} to {city2} is...')
+        print(f'Approximately: {distance:.2f} kilometers\n')
+        city_distances.append({'City1':city1, 'City2':city2, 'Distance':distance})
+    city_distances_df = pd.DataFrame(city_distances)
+    farthest_cities = city_distances_df.loc[city_distances_df['Distance'].idxmax()]
+
+    # main variables used
     visited_places = [] 
-    non_visited_places = df_table['city'].to_list() 
-    starting_city = 'Tokyo'
+    non_visited_places = df_table['city'].to_list()
+    len_total_places = len(non_visited_places)
+    starting_city = farthest_cities[0]
     current_city = starting_city
 
     visited_places.append(starting_city)
@@ -195,12 +215,12 @@ def make_route(df_table):
             lat1, lng1 = df_table.loc[df_table['city']==current_city, ['lat','lng']].values[0]
             lat2, lng2 = df_table.loc[df_table['city']==city, ['lat','lng']].values[0]
             distance = calculate_distance(lat1, lng1, lat2, lng2)
-            print(f'Distance from {current_city} to {city} is  {distance:.2f}km.')
+            print(f'Distance from {current_city} to {city} is {distance:.2f}km.')
             dist_dict[city] = distance
         print(f'We have currently visited: {", ".join(visited_places)}')
         print(f'We have yet to visit: {", ".join(non_visited_places)}')
         current_city = min(dist_dict, key=lambda k: dist_dict[k])
-        if trial == len(non_visited_places)+1:
+        if trial == len_total_places-1:
             print(f'Last stop is {current_city} with a total distance of {dist_dict[current_city]:.2f}km.')
         else:    
             print(f'Next stop is {current_city} with a total distance of {dist_dict[current_city]:.2f}km.')
