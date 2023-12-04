@@ -41,7 +41,7 @@ df['city'] = df['city'].agg(lambda x: x.str.replace('-', ' '))
 df['city'] = df['city'].agg(lambda x: x.str.replace('\'', ''))
 
 
-# make the functions here
+# main function to run the program with set of instructions
 def main():
     instruction = """
 What would you like to do? (Type number + Enter)
@@ -50,7 +50,10 @@ What would you like to do? (Type number + Enter)
  3. save it in a file
  4. exit the program\n
 Input: """ 
+    # while loop to keep the program running unless quitting
     while True: 
+
+        # Option 1: Make itinerary
         user = input(green_font + instruction + reset_font)
         if user =='1':
 
@@ -96,8 +99,12 @@ if you want to remake the table input 1 again,
 if you want to proceed input 2 for an ideal route calculation!"""
             print(red_font + warning + reset_font)
 
+        # Option 2: Make route
         elif user == '2':
+
             # make an ideal route
+            
+            
             pass
            
         elif user == '3':
