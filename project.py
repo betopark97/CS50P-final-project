@@ -103,7 +103,7 @@ if you want to proceed input 2 for an ideal route calculation!"""
         elif user == '2':
 
             # make an ideal route
-            
+            make_route(df_table)
             
             pass
            
@@ -178,9 +178,35 @@ def calculate_distance(lat1, lng1, lat2, lng2):
     return distance
 
 
-def make_route():
-    # use Dijkstra's Algorithm to make ideal route
-    pass
+def make_route(df_table):
+    # Use idea of Dijkstra's Algorithm
+    visited_places = [] 
+    non_visited_places = df_table['city'].to_list() 
+    starting_city = 'Tokyo'
+    current_city = starting_city
+
+    visited_places.append(starting_city)
+    non_visited_places.remove(starting_city)
+    for trial in range(len(non_visited_places)):
+        dist_dict = {}
+        print(f'Stop {trial+1}')
+        print(f'We are currently in: {current_city}')
+        for city in non_visited_places:
+            lat1, lng1 = df_table.loc[df_table['city']==current_city, ['lat','lng']].values[0]
+            lat2, lng2 = df_table.loc[df_table['city']==city, ['lat','lng']].values[0]
+            distance = calculate_distance(lat1, lng1, lat2, lng2)
+            print(f'Distance from {current_city} to {city} is  {distance:.2f}km.')
+            dist_dict[city] = distance
+        print(f'We have currently visited: {", ".join(visited_places)}')
+        print(f'We have yet to visit: {", ".join(non_visited_places)}')
+        current_city = min(dist_dict, key=lambda k: dist_dict[k])
+        if trial == len(non_visited_places)+1:
+            print(f'Last stop is {current_city} with a total distance of {dist_dict[current_city]:.2f}km.')
+        else:    
+            print(f'Next stop is {current_city} with a total distance of {dist_dict[current_city]:.2f}km.')
+        visited_places.append(current_city)
+        non_visited_places.remove(current_city)
+        print('')
 
 
 def make_map():
