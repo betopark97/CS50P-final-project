@@ -57,6 +57,7 @@ Input: """
 
         # Option 1: Make itinerary
         user = input(green_font + instruction + reset_font)
+        print('')
         if user =='1':
 
             # Country
@@ -73,7 +74,7 @@ Input: """
 
             # Cities
             # instruction for cities input
-            print(blue_font+'Input "done" when done adding cities.'+reset_font)
+            print(f'{blue_font}Input "done" when done adding cities.{reset_font}')
             final_cities = []
             while True:
                 # ask for city and make it case-insensitive
@@ -96,9 +97,8 @@ Input: """
             
 
             warning = """
-If the table missed a country or city: maybe you had a typo or the dataset doesn't contain info about that place 😭,
-if you want to remake the table input 1 again,
-if you want to proceed input 2 for an ideal route calculation!"""
+If you want to remake the table input 1 again 😭,
+if you want to proceed input 2 for an ideal route calculation 😁!"""
             print(red_font + warning + reset_font)
 
         # Option 2: Make route
@@ -145,7 +145,7 @@ def check_place(df, place, column):
                     place_suggestion.append(suggestion)
             # if after loop there wasn't a word that matched dataset
             if len(place_suggestion) == 0:
-                print('Maybe there was a typo?\nPlease, try again.')
+                print(f'\n{red_font}Maybe there was a typo? Please, try again.{reset_font}\n')
             # if after loop there was a word that matched dataset, suggest
             else:
                 print('Perhaps you mean:')
@@ -188,8 +188,10 @@ def calculate_distance(lat1, lng1, lat2, lng2):
 
 
 def find_farthest_cities(df):
-    # calculate the longest distances
-    # Get the two farthest cities using itertools
+    # Print what program is doing
+    print(f'{blue_font}Calculating all possible distances...\n...\n...\n{reset_font}')
+
+    # Get the two farthest cities using itertools (longest distance)
     city_combinations = list(itertools.combinations(df['city'],2))
     city_distances = []
     for index, combination in enumerate(city_combinations):
@@ -207,6 +209,7 @@ def find_farthest_cities(df):
 
 
 def make_route(df):
+
     # Use idea of Dijkstra's Algorithm
 
     # main variables used
@@ -214,12 +217,15 @@ def make_route(df):
     non_visited_places = df['city'].to_list()
     len_total_places = len(non_visited_places)
     starting_city = random.choice(find_farthest_cities(df))
-    print(starting_city)
     current_city = starting_city
     route = [current_city]
 
     visited_places.append(starting_city)
     non_visited_places.remove(starting_city)
+
+    # Print what the program is doing
+    print(f'{blue_font}The route information would be as follows...\n...\n...\n{reset_font}')
+
     for trial in range(len(non_visited_places)):
         dist_dict = {}
         print(f'Stop {trial+1}')
@@ -242,7 +248,7 @@ def make_route(df):
         non_visited_places.remove(current_city)
         print('')
     
-    print(blue_font+'Ideal route is as follows:'+reset_font)
+    print(f'{blue_font}Ideal route is as follows:\n{reset_font}')
     for stop, place in enumerate(route):
         if stop == len(route)-1:
             print(f'Stop {stop+1}: {place}\n')
@@ -271,8 +277,6 @@ def make_map(country, df):
     ).add_to(map)
 
     return map
-
-
 
 
 if __name__ == '__main__':
