@@ -6,6 +6,7 @@ import folium
 from tabulate import tabulate
 import itertools
 import re
+import subprocess
 
 
 # different color fonts and reset
@@ -105,11 +106,16 @@ if you want to proceed input 2 for an ideal route calculation!"""
 
             # make an ideal route
             ideal_route = make_route(df_table)
+            # organize the dataframe in this order
+            df_route = df_table.sort_values(by='city', key=lambda x: x.map({city: i for i, city in enumerate(ideal_route)}))
+
+            
            
         elif user == '3':
             # make map
-            route_map = make_map(final_country,ideal_route, df_table)
+            route_map = make_map(final_country, df_route)
             route_map.save('map.html')
+            subprocess.run('open map.html', shell=True, check=True)
 
 
         elif user == '4':
@@ -180,6 +186,7 @@ def calculate_distance(lat1, lng1, lat2, lng2):
     distance = R * c
     return distance
 
+
 def find_farthest_cities(df):
     # calculate the longest distances
     # Get the two farthest cities using itertools
@@ -245,12 +252,24 @@ def make_route(df):
     return route
 
 
-def make_map(country, cities, df):
+def make_map(country, df):
     df_country = pd.read_csv('worldcountries.csv')
-    final_country_zoom = df_country.loc[df_country['country']==country,['latitude','longitude']]
-    map = folium.Map(location=final_country_zoom, zoom_start=5)
+    country_loc = df_country.loc[df_country['country']==country,['latitude','longitude']]
+    map = folium.Map(location=country_loc, zoom_start=5)
 
-    
+    for city, lat, lng in zip(df['city'],df['lat'],df['lng']):
+        folium.Marker(
+            location=[lat,lng],
+            tooltip=city,
+            popup=city,
+            icon=folium.Icon(color='blue')
+        ).add_to(map)
+    folium.PolyLine(
+        locations=df.loc[:,['lat','lng']],
+        color='#FF0000',
+        weight=5,
+    ).add_to(map)
+
     return map
 
 
