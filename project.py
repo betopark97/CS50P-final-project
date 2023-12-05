@@ -72,7 +72,7 @@ Input: """
 
             # Cities
             # instruction for cities input
-            print(green_font+'Input "done" when done adding cities.'+reset_font)
+            print(blue_font+'Input "done" when done adding cities.'+reset_font)
             final_cities = []
             while True:
                 # ask for city and make it case-insensitive
@@ -107,8 +107,10 @@ if you want to proceed input 2 for an ideal route calculation!"""
             ideal_route = make_route(df_table)
            
         elif user == '3':
-            # save in a file
-            pass
+            # make map
+            route_map = make_map(final_country,ideal_route, df_table)
+            route_map.save('map.html')
+
 
         elif user == '4':
             # exit the program
@@ -232,11 +234,26 @@ def make_route(df):
         visited_places.append(current_city)
         non_visited_places.remove(current_city)
         print('')
+    
+    print(blue_font+'Ideal route is as follows:'+reset_font)
+    for stop, place in enumerate(route):
+        if stop == len(route)-1:
+            print(f'Stop {stop+1}: {place}\n')
+        else:
+            print(f'Stop {stop+1}: {place}\n          ↓')
+    print('')
     return route
 
 
-def make_map():
-    pass
+def make_map(country, cities, df):
+    df_country = pd.read_csv('worldcountries.csv')
+    final_country_zoom = df_country.loc[df_country['country']==country,['latitude','longitude']]
+    map = folium.Map(location=final_country_zoom, zoom_start=5)
+
+    
+    return map
+
+
 
 
 if __name__ == '__main__':
