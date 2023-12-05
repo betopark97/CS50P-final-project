@@ -1,1 +1,5 @@
+wordcities.csv license:
 CC0: Public Domain
+
+worldcountries.csv license:
+CC BY-SA 4.0

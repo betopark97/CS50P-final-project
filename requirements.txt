@@ -7,3 +7,4 @@ pip install tabulate
 
 Other files that you need from this repository:
 worldcities.csv [https://www.kaggle.com/datasets/aziz69/worldcities]
+worldcountries.csv [https://www.kaggle.com/datasets/paultimothymooney/latitude-and-longitude-for-every-country-and-state]
