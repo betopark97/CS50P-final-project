@@ -1,7 +1,7 @@
 # import libraries
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import random
 import folium
 from tabulate import tabulate
 import itertools
@@ -47,8 +47,8 @@ def main():
     instruction = """
 What would you like to do? (Type number + Enter)
  1. make itinerary
- 2. calculate distances or ideal route
- 3. save it in a file
+ 2. make ideal route
+ 3. make a map
  4. exit the program\n
 Input: """ 
     # while loop to keep the program running unless quitting
@@ -90,7 +90,7 @@ Input: """
             # mask dataframe to match the user inputs
             df_table = df.loc[(df['country']==final_country) & (df['city'].isin(final_cities))]
             # make the table with country, city, latitude and longitudes
-            print(make_table(df_table))
+            make_table(df_table)
             # ask if wants to proceed or remake
             
 
@@ -104,9 +104,7 @@ if you want to proceed input 2 for an ideal route calculation!"""
         elif user == '2':
 
             # make an ideal route
-            make_route(df_table)
-            
-            pass
+            ideal_route = make_route(df_table)
            
         elif user == '3':
             # save in a file
@@ -115,6 +113,8 @@ if you want to proceed input 2 for an ideal route calculation!"""
         elif user == '4':
             # exit the program
             return False
+        else:
+            print('\n'+red_font+'Please input one of the options provided.'+reset_font)
         
 
 def check_place(df, place, column):
@@ -137,7 +137,7 @@ def check_place(df, place, column):
                     place_suggestion.append(suggestion)
             # if after loop there wasn't a word that matched dataset
             if len(place_suggestion) == 0:
-                print('Please, try again.')
+                print('Maybe there was a typo?\nPlease, try again.')
             # if after loop there was a word that matched dataset, suggest
             else:
                 print('Perhaps you mean:')
@@ -145,7 +145,7 @@ def check_place(df, place, column):
                     print('...'+suggestion)
                 print('Please, try again.')
         # if user didn't input anything
-        else:
+        elif place == '':
             print('You didn\'t make an input, try again.')
 
 
@@ -178,18 +178,15 @@ def calculate_distance(lat1, lng1, lat2, lng2):
     distance = R * c
     return distance
 
-
-def make_route(df_table):
-    # Use idea of Dijkstra's Algorithm
-
+def find_farthest_cities(df):
     # calculate the longest distances
     # Get the two farthest cities using itertools
-    city_combinations = list(itertools.combinations(df_table['city'],2))
+    city_combinations = list(itertools.combinations(df['city'],2))
     city_distances = []
     for index, combination in enumerate(city_combinations):
         city1, city2 = combination
-        lat1, lng1 = df_table.loc[df_table['city']==city1,['lat','lng']].values[0]
-        lat2, lng2 = df_table.loc[df_table['city']==city2,['lat','lng']].values[0]
+        lat1, lng1 = df.loc[df['city']==city1,['lat','lng']].values[0]
+        lat2, lng2 = df.loc[df['city']==city2,['lat','lng']].values[0]
         print(f'Combination {index+1}')
         distance = calculate_distance(lat1,lng1,lat2,lng2)
         print(f'Distance from {city1} to {city2} is...')
@@ -197,13 +194,20 @@ def make_route(df_table):
         city_distances.append({'City1':city1, 'City2':city2, 'Distance':distance})
     city_distances_df = pd.DataFrame(city_distances)
     farthest_cities = city_distances_df.loc[city_distances_df['Distance'].idxmax()]
+    return farthest_cities[:2].tolist()
+
+
+def make_route(df):
+    # Use idea of Dijkstra's Algorithm
 
     # main variables used
     visited_places = [] 
-    non_visited_places = df_table['city'].to_list()
+    non_visited_places = df['city'].to_list()
     len_total_places = len(non_visited_places)
-    starting_city = farthest_cities[0]
+    starting_city = random.choice(find_farthest_cities(df))
+    print(starting_city)
     current_city = starting_city
+    route = [current_city]
 
     visited_places.append(starting_city)
     non_visited_places.remove(starting_city)
@@ -212,21 +216,23 @@ def make_route(df_table):
         print(f'Stop {trial+1}')
         print(f'We are currently in: {current_city}')
         for city in non_visited_places:
-            lat1, lng1 = df_table.loc[df_table['city']==current_city, ['lat','lng']].values[0]
-            lat2, lng2 = df_table.loc[df_table['city']==city, ['lat','lng']].values[0]
+            lat1, lng1 = df.loc[df['city']==current_city, ['lat','lng']].values[0]
+            lat2, lng2 = df.loc[df['city']==city, ['lat','lng']].values[0]
             distance = calculate_distance(lat1, lng1, lat2, lng2)
             print(f'Distance from {current_city} to {city} is {distance:.2f}km.')
             dist_dict[city] = distance
         print(f'We have currently visited: {", ".join(visited_places)}')
         print(f'We have yet to visit: {", ".join(non_visited_places)}')
         current_city = min(dist_dict, key=lambda k: dist_dict[k])
-        if trial == len_total_places-1:
+        route.append(current_city)
+        if trial == len_total_places-2:
             print(f'Last stop is {current_city} with a total distance of {dist_dict[current_city]:.2f}km.')
         else:    
             print(f'Next stop is {current_city} with a total distance of {dist_dict[current_city]:.2f}km.')
         visited_places.append(current_city)
         non_visited_places.remove(current_city)
         print('')
+    return route
 
 
 def make_map():
