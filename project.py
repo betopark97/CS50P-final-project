@@ -136,7 +136,7 @@ if you want to proceed input 2 for an ideal route calculation 😁!"""
             print('\n'+red_font+'Please input one of the options provided.'+reset_font)
         
 
-def check_place(df, place, column):
+def check_place(df: pd.DataFrame, place: str, column: str) -> str:
     # check if the place is in dataframe
     if place in df[column].values:
         return place
@@ -168,14 +168,14 @@ def check_place(df, place, column):
             print('You didn\'t make an input, try again.')
 
 
-def make_table(df):
+def make_table(df: pd.DataFrame) -> tabulate:
     # capitalize the name of columns to show in tabulate
     new_df = df.rename(columns=lambda x: x.capitalize())
     # return the tabulate table
     return tabulate(new_df, headers='keys', tablefmt='grid', showindex=False)
 
 
-def calculate_distance(lat1, lng1, lat2, lng2):
+def calculate_distance(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
     # approximate radius of earth in km
     R = 6371.0
 
@@ -198,7 +198,7 @@ def calculate_distance(lat1, lng1, lat2, lng2):
     return distance
 
 
-def find_farthest_cities(df):
+def find_farthest_cities(df: pd.DataFrame) -> list:
     # Print what program is doing
     print(f'{blue_font}Calculating all possible distances...\n...\n...\n{reset_font}')
 
@@ -223,7 +223,7 @@ def find_farthest_cities(df):
     return farthest_cities[:2].tolist()
 
 
-def make_route(df):
+def make_route(df: pd.DataFrame) -> list:
     # Use idea of Dijkstra's Algorithm
 
     # main variables used
@@ -280,7 +280,7 @@ def make_route(df):
     return route
 
 
-def make_map(country, df):
+def make_map(country: str, df: pd.DataFrame) -> folium.Map:
     # read csv of coordinates of countries to make a zoom to the chosen country
     df_country = pd.read_csv('worldcountries.csv')
     country_loc = df_country.loc[df_country['country']==country,['latitude','longitude']]
