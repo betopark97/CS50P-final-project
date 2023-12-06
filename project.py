@@ -15,10 +15,12 @@ green_font = '\033[92m'
 blue_font = '\033[94m'
 reset_font = '\033[0m'
 
+
 # read dataframe
 df = pd.read_csv('worldcities.csv')
 df = df.loc[:,['country','city_ascii','lat','lng']]
 df = df.rename(columns={'city_ascii':'city'})
+
 
 # find names that are hard to type to clean them
 def find_non_alphabet(df,column):
@@ -31,12 +33,14 @@ def find_non_alphabet(df,column):
     for country in non_alphabet_country:
         print(country)
 
+
 # some manual cleaning for name of countries that are hard to type
 df = df.replace("Côte D’Ivoire", 'Ivory Coast')
 df = df.replace('Korea, South', 'South Korea')
 df = df.replace('Korea, North', 'North Korea')
 df = df.replace('Naha', 'Okinawa')
 df['country'] = df['country'].agg(lambda x: x.str.replace('-', ' '))
+
 
 # some cleaning for name of cities that are hard to type
 df['city'] = df['city'].agg(lambda x: x.str.replace('-', ' '))
@@ -60,6 +64,9 @@ Input: """
         print('')
         if user =='1':
 
+            # Instructions for make itinerary
+            print(f'{blue_font}You will be asked for one country and various cities.\n{reset_font}')
+
             # Country
             final_country = None
             while True:
@@ -74,7 +81,7 @@ Input: """
 
             # Cities
             # instruction for cities input
-            print(f'{blue_font}Input "done" when done adding cities.{reset_font}')
+            print(f'\n{blue_font}Input "done" when done adding cities.\n{reset_font}')
             final_cities = []
             while True:
                 # ask for city and make it case-insensitive
@@ -94,7 +101,6 @@ Input: """
             # make the table with country, city, latitude and longitudes
             make_table(df_table)
             # ask if wants to proceed or remake
-            
 
             warning = """
 If you want to remake the table input 1 again 😭,
@@ -106,21 +112,26 @@ if you want to proceed input 2 for an ideal route calculation 😁!"""
 
             # make an ideal route
             ideal_route = make_route(df_table)
-            # organize the dataframe in this order
+            # organize the dataframe in order of ideal_route for loop in make_map()
             df_route = df_table.sort_values(by='city', key=lambda x: x.map({city: i for i, city in enumerate(ideal_route)}))
 
-            
-           
+        # Option 3: Make map
         elif user == '3':
+
             # make map
             route_map = make_map(final_country, df_route)
+            # save the map in html format
             route_map.save('map.html')
+            # open the html formatted map in a browser 
             subprocess.run('open map.html', shell=True, check=True)
 
-
+        # Option 4: Exit program
         elif user == '4':
-            # exit the program
+
+            # exit program by ending the while loop
             return False
+        
+        # Re-run the loop if someone doesn't answer a provided option
         else:
             print('\n'+red_font+'Please input one of the options provided.'+reset_font)
         
@@ -194,22 +205,25 @@ def find_farthest_cities(df):
     # Get the two farthest cities using itertools (longest distance)
     city_combinations = list(itertools.combinations(df['city'],2))
     city_distances = []
+    # make for loop to calculate combinations
     for index, combination in enumerate(city_combinations):
         city1, city2 = combination
         lat1, lng1 = df.loc[df['city']==city1,['lat','lng']].values[0]
         lat2, lng2 = df.loc[df['city']==city2,['lat','lng']].values[0]
         print(f'Combination {index+1}')
+        # calculate distance between two cities
         distance = calculate_distance(lat1,lng1,lat2,lng2)
         print(f'Distance from {city1} to {city2} is...')
         print(f'Approximately: {distance:.2f} kilometers\n')
+        # add the cities and their distances as a dictionary to find them by highest distance
         city_distances.append({'City1':city1, 'City2':city2, 'Distance':distance})
     city_distances_df = pd.DataFrame(city_distances)
+    # get the highest distance and the according city names with idxmax distance
     farthest_cities = city_distances_df.loc[city_distances_df['Distance'].idxmax()]
     return farthest_cities[:2].tolist()
 
 
 def make_route(df):
-
     # Use idea of Dijkstra's Algorithm
 
     # main variables used
@@ -220,16 +234,20 @@ def make_route(df):
     current_city = starting_city
     route = [current_city]
 
+    # remove and add from variables accordingly
     visited_places.append(starting_city)
     non_visited_places.remove(starting_city)
 
     # Print what the program is doing
     print(f'{blue_font}The route information would be as follows...\n...\n...\n{reset_font}')
 
+    # make a for loop for every stop or node in the list of cities
     for trial in range(len(non_visited_places)):
+        # make a distance dictionary that resets everytime to choose the smallest distance
         dist_dict = {}
         print(f'Stop {trial+1}')
         print(f'We are currently in: {current_city}')
+        # make a for loop to loop every non-visited city to prevent going back to the same place
         for city in non_visited_places:
             lat1, lng1 = df.loc[df['city']==current_city, ['lat','lng']].values[0]
             lat2, lng2 = df.loc[df['city']==city, ['lat','lng']].values[0]
@@ -240,6 +258,7 @@ def make_route(df):
         print(f'We have yet to visit: {", ".join(non_visited_places)}')
         current_city = min(dist_dict, key=lambda k: dist_dict[k])
         route.append(current_city)
+        # boolean statement to show the last stop or not
         if trial == len_total_places-2:
             print(f'Last stop is {current_city} with a total distance of {dist_dict[current_city]:.2f}km.')
         else:    
@@ -248,6 +267,7 @@ def make_route(df):
         non_visited_places.remove(current_city)
         print('')
     
+    # show the ideal order of cities to visit according to the algorithm above
     print(f'{blue_font}Ideal route is as follows:\n{reset_font}')
     for stop, place in enumerate(route):
         if stop == len(route)-1:
@@ -255,14 +275,19 @@ def make_route(df):
         else:
             print(f'Stop {stop+1}: {place}\n          ↓')
     print('')
+
+    # return the order to use it to make the map
     return route
 
 
 def make_map(country, df):
+    # read csv of coordinates of countries to make a zoom to the chosen country
     df_country = pd.read_csv('worldcountries.csv')
     country_loc = df_country.loc[df_country['country']==country,['latitude','longitude']]
+    # make the map covering the chosen country
     map = folium.Map(location=country_loc, zoom_start=5)
 
+    # make a for loop to make markers (pop-ups) in the chosen cities
     for city, lat, lng in zip(df['city'],df['lat'],df['lng']):
         folium.Marker(
             location=[lat,lng],
@@ -270,12 +295,15 @@ def make_map(country, df):
             popup=city,
             icon=folium.Icon(color='blue')
         ).add_to(map)
+
+    # add lines connecting all the cities that were chosen
     folium.PolyLine(
         locations=df.loc[:,['lat','lng']],
         color='#FF0000',
         weight=5,
     ).add_to(map)
 
+    # return the map object
     return map
 
 
