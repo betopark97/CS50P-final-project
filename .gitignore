@@ -2,3 +2,5 @@
 todo_list.txt
 simulation_project.ipynb
 map.html
+__pycache__
+.pytest_cache
