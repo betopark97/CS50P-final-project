@@ -99,7 +99,7 @@ Input: """
             # mask dataframe to match the user inputs
             df_table = df.loc[(df['country']==final_country) & (df['city'].isin(final_cities))]
             # make the table with country, city, latitude and longitudes
-            make_table(df_table)
+            print(make_table(df_table))
             # ask if wants to proceed or remake
 
             warning = """
@@ -162,10 +162,10 @@ def check_place(df: pd.DataFrame, place: str, column: str) -> str:
                 print('Perhaps you mean:')
                 for suggestion in place_suggestion:
                     print('...'+suggestion)
-                print('Please, try again.')
+                print('Please, try again.\n')
         # if user didn't input anything
         elif place == '':
-            print('You didn\'t make an input, try again.')
+            print('You didn\'t make an input, try again.\n')
 
 
 def make_table(df: pd.DataFrame) -> tabulate:
