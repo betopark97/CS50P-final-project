@@ -2,7 +2,7 @@
 This repository is for my CS50P's Final Project.
 
 # Travel Route Estimator
-    #### Video Demo:  <URL HERE>
+    #### Video Demo:  [https://youtu.be/p3rBHigyris]
     #### Description (Personal Thoughts and Documentation) below: ↓↓↓
 
 ## Personal Thoughts
